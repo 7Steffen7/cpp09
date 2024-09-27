@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #
 
 
@@ -72,13 +73,66 @@ void BitcoinExchange::readDatabase() {
 		if (std::getline(ss, date, ',') && ss >> value) {
 			if (!date_check(date))
 				throw std::invalid_argument("invalid database");
-		_database[date] = value;
+			_database[date] = value;
 		}
 		else
 			throw std::invalid_argument("invalid database");
-			// for (const auto& pair : data) {
-			// 	std::cout << pair.first << " - " << pair.second << std::endl;
-			// }
-			// std::cout << "map size: " << data.size() << std::endl;
+		// for (const auto& pair : _database) {
+		// 	std::cout << pair.first << ", " << pair.second << std::endl;
+		// }
+		// std::cout << "map size: " << _database.size() << std::endl;
+	}
+}
+
+// bool BitcoinExchange::value_check(double value) {
+
+// 	if (value > 1000.0 || value < 0.0)
+// 		return false;
+// 	return true;
+// }
+
+void BitcoinExchange::searchDatabase() {
+	std::ifstream file(_input_data);
+
+	if (!file.is_open())
+		throw std::invalid_argument("could not open input file");
+	std::string line;
+	if (!std::getline(file, line))
+		throw std::invalid_argument("input file is empty");
+	while (std::getline(file, line)) {
+		std::stringstream ss(line);
+		std::string date;
+		double value;
+
+		if (std::getline(ss, date, '|') && ss >> value) {
+			if (!date_check(date) || date.back() != ' ')
+				std::cout << "Error: bad input: " << line << std::endl;
+			date.pop_back();
+			// std::cout << value << " ";
+			// std::cout << date << " " << std::endl;
+			// std::cout << _database[date] << " ";
+			if (value > 1000.0) {
+				std::cout << "Error: too large a number" << std::endl;
+				continue;
+			}
+			if (value < 0.0) {
+				std::cout << "Error: not a positive number" << std::endl;
+				continue;
+			}
+			if (_database.find(date) != _database.end()) {
+				std::cout << date << " => " << value << " = " << value * _database[date] << std::endl;
+			} else {
+				auto it = _database.lower_bound(date);
+				if (it != _database.begin()) {
+					--it;
+					std::cout << date << " => " << value << " = " << value * it->second << std::endl;
+
+				}
+				else
+					std::cout << "Outdated" << std::endl;;
+			}
+		} else
+			std::cout << "Error: Bad input: " << line << std::endl;
+
 	}
 }
