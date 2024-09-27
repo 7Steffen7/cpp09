@@ -15,6 +15,19 @@ BitcoinExchange::~BitcoinExchange() {
 	std::cout << "BitcoinExchange destructor called" << std::endl;
 }
 
+BitcoinExchange::BitcoinExchange(const BitcoinExchange& other) : _database(other._database),
+																_input_data(other._input_data) {
+	std::cout << "BitcoinExchange copy constructor called" << std::endl;
+}
+
+BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange &other) {
+	if (this != & other) {
+		_input_data = other._input_data;
+		_database = other._database;
+	}
+	return *this;
+}
+
 bool BitcoinExchange::date_check(const std::string& date) {
 
 	// get current date
@@ -25,10 +38,6 @@ bool BitcoinExchange::date_check(const std::string& date) {
 	int current_year = timeinfo->tm_year + 1900;
 	int current_month = timeinfo->tm_mon + 1;
 	int current_day = timeinfo->tm_mday;
-	// std::stringstream ss;
-	// ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d");
-	// std::cout << ss.str() << std::endl;
-	// (void)date;
 
 	std::stringstream ss(date);
 
@@ -84,13 +93,6 @@ void BitcoinExchange::readDatabase() {
 	}
 }
 
-// bool BitcoinExchange::value_check(double value) {
-
-// 	if (value > 1000.0 || value < 0.0)
-// 		return false;
-// 	return true;
-// }
-
 void BitcoinExchange::searchDatabase() {
 	std::ifstream file(_input_data);
 
@@ -105,12 +107,11 @@ void BitcoinExchange::searchDatabase() {
 		double value;
 
 		if (std::getline(ss, date, '|') && ss >> value) {
-			if (!date_check(date) || date.back() != ' ')
+			if (!date_check(date) || date.back() != ' ') {
 				std::cout << "Error: bad input: " << line << std::endl;
+				continue;
+			}
 			date.pop_back();
-			// std::cout << value << " ";
-			// std::cout << date << " " << std::endl;
-			// std::cout << _database[date] << " ";
 			if (value > 1000.0) {
 				std::cout << "Error: too large a number" << std::endl;
 				continue;
@@ -126,10 +127,9 @@ void BitcoinExchange::searchDatabase() {
 				if (it != _database.begin()) {
 					--it;
 					std::cout << date << " => " << value << " = " << value * it->second << std::endl;
-
 				}
 				else
-					std::cout << "Outdated" << std::endl;;
+					std::cout << "Error: Outdated" << std::endl;;
 			}
 		} else
 			std::cout << "Error: Bad input: " << line << std::endl;
