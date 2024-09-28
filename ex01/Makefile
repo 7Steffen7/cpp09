@@ -10,7 +10,7 @@ CXX = c++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Werror -MMD -MP -O2 -g
 
 SRC = main.cpp \
-	RPN.cpp
+
 
 SRC_DIR:=.
 
