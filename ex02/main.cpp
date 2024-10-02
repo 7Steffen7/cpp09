@@ -3,8 +3,10 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
+	PmergeMe algo;
 	try {
-		PmergeMe Object(argc, argv);
+		algo.built_containers(argc, argv);
+		algo.sort_pairs();
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
 	}
