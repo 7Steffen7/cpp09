@@ -156,31 +156,56 @@ void fordJohnson(std::variant<std::vector<int>, std::pair<std::vector<int>, std:
 		return;
 
 	std::pair<std::vector<int>, std::vector<int>> Pair;
-	int unpaired = -1;
+	// int unpaired = -1;
 	// for (std::size_t i = 0; i + 1 < size; i += 2) {
 	// 	Pair.emplace_back(flex_vec[i], flex_vec[i + 1]);
 	// }
 	std::visit([&](const auto& v) {
 		if constexpr (std::is_same_v<std::decay_t<decltype(v)>, std::vector<int>>) {
 			for (std::size_t i = 0; i + 1 < v.size(); i += 2) {
-				Pair.first.push_back(v[i]);
-				Pair.second.push_back(v[i + 1]);
-				// Pair.emplace_back(v[i], v[i + 1]);
+				std::cout << v[i] << " " << v[i + 1] << " ";
+				if (v[i] > v[i + 1]) {
+					Pair.first.push_back(v[i]);
+					Pair.second.push_back(v[i + 1]);
+				} else {
+					Pair.first.push_back(v[i + 1]);
+					Pair.second.push_back(v[i]);
+				}
 			}
-			if (v.size() % 2 != 0) {
-				unpaired = v.back();
-			}
+			std::cout << std::endl;
+			// if (v.size() % 2 != 0) {
+			// 	unpaired = v.back();
+			// }
 		} else if constexpr (std::is_same_v<std::decay_t<decltype(v)>, std::pair<std::vector<int>, std::vector<int>>>) {
-			for (std::size_t i = 0; i + 1 < v.first.size(); ++i) {
+			for (std::size_t i = 0; i + 1 < v.first.size(); i += 2) {
+				std::cout << v.first[i] << " " << v.first[i + 1] << " ";
+				if (v.first[i] > v.first[i + 1]) {
 				Pair.first.push_back(v.first[i]);
 				Pair.second.push_back(v.first[i + 1]);
-				// Pair.emplace_back(i, v.second);
+				} else {
+					Pair.first.push_back(v.first[i + 1]);
+					Pair.second.push_back(v.first[i]);
+				}
 			}
+			std::cout << std::endl;
 		}
 	}, flex_vec);
-	std::variant<std::vector<int>, std::pair<std::vector<int>, std::vector<int>>> rec = Pair;
-	fordJohnson(rec);
+	std::variant<std::vector<int>, std::pair<std::vector<int>, std::vector<int>>> variant_pair = Pair;
+	fordJohnson(variant_pair);
 
+	for (std::size_t i = 0; i < Pair.first.size(); ++i) {
+		std::cout << "higher nbr: " << Pair.first[i];
+		std::cout << " lower nbr: " << Pair.second[i] << std::endl;
+	}
+	std::cout << std::endl;
+
+	std::vector<int> main_chain = Pair.first;
+	std::vector<int> pending_chain = Pair.second;
+
+	// logic for uneven last element
+	// if (size % 2 == 0) {
+	// 	pending_chain.push_back(flex_vec[size - 1]);
+	// }
 
 	// std::size_t size = static_cast<std::vector<int>(flex_vec);
 	// 	return;
