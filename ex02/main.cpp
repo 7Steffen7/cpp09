@@ -11,9 +11,13 @@ int main() {
 	// using flexVector = std::variant<simpleVector, pairVector>;
 	// std::variant<std::vector<int>, std::vector<std::pair<int, int>>> flex;;
 	std::vector<int> input = {4, 5, 21, 2, 212, 42, 1, 40, 37};
-	std::variant<std::vector<int>,std::pair<std::vector<int>, std::vector<int>>> flex_vec = input;
+	// std::variant<std::vector<int>,std::pair<std::vector<int>, std::vector<int>>> flex_vec = input;
+	std::pair<std::vector<int>, std::vector<int>> flex_vec;
+	flex_vec.first = input;
 	fordJohnson(flex_vec);
 
+	// for ( int nbr : std::get<std::vector<int>>(flex_vec)) std::cout << nbr << " ";
+	// std::cout << std::endl;
 	// PmergeMe algo;
 	// try {
 	// 	algo.built_containers(argc, argv);

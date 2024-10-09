@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <utility>
 #include <vector>
 #include <variant>
 
@@ -25,4 +26,5 @@ private:
 	// std::deque<int> deq_container;
 };
 
-void fordJohnson(std::variant<std::vector<int>,std::pair<std::vector<int>, std::vector<int>>>& flex_vec);
+// void fordJohnson(std::variant<std::vector<int>,std::pair<std::vector<int>, std::vector<int>>>& flex_vec);
+void fordJohnson(std::pair<std::vector<int>, std::vector<int>>& double_vec);

@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <exception>
 #include <iostream>
+#include <iterator>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -53,161 +54,51 @@ void PmergeMe::built_containers(int argc, char *argv[]){
 // 		throw std::invalid_argument("Duplicate found");
 // }
 
-void PmergeMe::sort_pairs() {
-	for (size_t i = 0; i < vec_container.size() - 1; i += 2) {
-		if (vec_container[i] < vec_container[i + 1]) {
-			std::swap(vec_container[i], vec_container[i + 1]);
-		}
-	}
-	std::cout << "higher value of pair first:\n";
-	for (const auto& element : vec_container) {
-		std::cout  << element << " ";
-	}
-	std::cout << std::endl;
-}
 
-
-void PmergeMe::mergeInsertion(int start, int end) {
-	// if (end - start <= 10) {
-	// 	return;
-	// }
-	if (end - start <= 1)
-		return;
-	for (int i = start; i < end - 1; i += 2) {
-		if (vec_container[i] < vec_container[i + 1])
-			std::swap(vec_container[i], vec_container[i + 1]);
-	}
-	std::cout << "higher value of pair first:\n";
-	for (const auto& element : vec_container) {
-		std::cout  << element << " ";
-	}
-	// Split array into 2 parts
-	int split_point = start + (start - end) / 2;
-	mergeInsertion(start, split_point);
-	std::cout << "sorted pairs:\n";
-	for (const auto& element : vec_container) {
-		std::cout  << element << " ";
-	}
-	std::cout << std::endl;
-
-	// mergeInsertion(array, split_point + 1, end);
-
-	// std::vector<int> temp;
-	// for (int i = first_idx; i <= split_point; i += 2) {
-	// 	if (i + 1 <= split_point) {
-	// 		if (array[i] > array[i + 1]) {
-	// 			std::swap(array[i], array[i + 1]);
-	// 		}
-	// 		temp.push_back(array[i]);
-	// 	} else {
-	// 		temp.push_back(array[i]);
-	// 	}
-	// }
-
-	// merge(array, )
-}
-// void mergeInsertion(std::vector<int> array, int start, int end) {
-// 	// if (end - start <= 10) {
-// 	// 	return;
-// 	// }
-// 	if (end - start <= 1)
-// 		return;
-
-// 	// Split array into 2 parts
-// 	int split_point = start + (start - end) / 2;
-// 	mergeInsertion(array, start, split_point);
-// 	std::cout << "sorted pairs:\n";
-// 	for (const auto& element : array) {
-// 		std::cout  << element << " ";
-// 	}
-// 	std::cout << std::endl;
-
-// 	// mergeInsertion(array, split_point + 1, end);
-
-// 	// std::vector<int> temp;
-// 	// for (int i = first_idx; i <= split_point; i += 2) {
-// 	// 	if (i + 1 <= split_point) {
-// 	// 		if (array[i] > array[i + 1]) {
-// 	// 			std::swap(array[i], array[i + 1]);
-// 	// 		}
-// 	// 		temp.push_back(array[i]);
-// 	// 	} else {
-// 	// 		temp.push_back(array[i]);
-// 	// 	}
-// 	// }
-
-// 	// merge(array, )
-// }
-// void fordJohnson(std::variant<std::vector<int>,std::pair<int, int>>& flex_vec) {
-
-void fordJohnson(std::variant<std::vector<int>, std::pair<std::vector<int>, std::vector<int>>>& flex_vec) {
-	// check size of either std::vector<int> or std::pair<std::vector<int>, std::vector<int>>
-	std::size_t size = std::visit([] (const auto& v) -> std::size_t {
-	if constexpr (std::is_same_v<std::decay_t<decltype(v)>, std::vector<int>>) {
-		return v.size();
-	} else if constexpr (std::is_same_v<std::decay_t<decltype(v)>, std::pair<std::vector<int>, std::vector<int>>>) {
-		return v.first.size();
-	} else {
-		throw std::runtime_error("Error");
-	}
-	}, flex_vec);
-	std::cout << size << std::endl;
+void fordJohnson(std::pair<std::vector<int>, std::vector<int>>& double_vec) {
+	size_t size = double_vec.first.size();
 	if (size <= 1)
 		return;
 
 	std::pair<std::vector<int>, std::vector<int>> Pair;
-	// int unpaired = -1;
-	// for (std::size_t i = 0; i + 1 < size; i += 2) {
-	// 	Pair.emplace_back(flex_vec[i], flex_vec[i + 1]);
-	// }
-	std::visit([&](const auto& v) {
-		if constexpr (std::is_same_v<std::decay_t<decltype(v)>, std::vector<int>>) {
-			for (std::size_t i = 0; i + 1 < v.size(); i += 2) {
-				std::cout << v[i] << " " << v[i + 1] << " ";
-				if (v[i] > v[i + 1]) {
-					Pair.first.push_back(v[i]);
-					Pair.second.push_back(v[i + 1]);
-				} else {
-					Pair.first.push_back(v[i + 1]);
-					Pair.second.push_back(v[i]);
-				}
-			}
-			std::cout << std::endl;
-			// if (v.size() % 2 != 0) {
-			// 	unpaired = v.back();
-			// }
-		} else if constexpr (std::is_same_v<std::decay_t<decltype(v)>, std::pair<std::vector<int>, std::vector<int>>>) {
-			for (std::size_t i = 0; i + 1 < v.first.size(); i += 2) {
-				std::cout << v.first[i] << " " << v.first[i + 1] << " ";
-				if (v.first[i] > v.first[i + 1]) {
-				Pair.first.push_back(v.first[i]);
-				Pair.second.push_back(v.first[i + 1]);
-				} else {
-					Pair.first.push_back(v.first[i + 1]);
-					Pair.second.push_back(v.first[i]);
-				}
-			}
-			std::cout << std::endl;
+	for (std::size_t i = 0; i + 1 < double_vec.first.size(); i += 2) {
+		std::cout << double_vec.first[i] << " " << double_vec.first[i + 1] << " ";
+		if (double_vec.first[i] > double_vec.first[i + 1]) {
+			Pair.first.push_back(double_vec.first[i]);
+			Pair.second.push_back(double_vec.first[i + 1]);
+		} else {
+			Pair.first.push_back(double_vec.first[i + 1]);
+			Pair.second.push_back(double_vec.first[i]);
 		}
-	}, flex_vec);
-	std::variant<std::vector<int>, std::pair<std::vector<int>, std::vector<int>>> variant_pair = Pair;
-	fordJohnson(variant_pair);
-
-	for (std::size_t i = 0; i < Pair.first.size(); ++i) {
-		std::cout << "higher nbr: " << Pair.first[i];
-		std::cout << " lower nbr: " << Pair.second[i] << std::endl;
 	}
+	int odd_leftover = -1;
+	if (double_vec.first.size() % 2 != 0)
+		odd_leftover = double_vec.first.back();
 	std::cout << std::endl;
+	fordJohnson(Pair);
 
 	std::vector<int> main_chain = Pair.first;
 	std::vector<int> pending_chain = Pair.second;
 
-	// logic for uneven last element
-	// if (size % 2 == 0) {
-	// 	pending_chain.push_back(flex_vec[size - 1]);
-	// }
+	std::cout << "main chain: ";
+	for (int num : main_chain) std::cout << num << " ";
+	std::cout << std::endl;
 
-	// std::size_t size = static_cast<std::vector<int>(flex_vec);
-	// 	return;
-	// std::vector<std::pair<int, int>> Pairs;
+	std::cout << "pending chain: ";
+	for (int num : pending_chain) std::cout << num << " ";
+	std::cout << std::endl;
+
+	for (const int& element : pending_chain) {
+		auto it = std::lower_bound(main_chain.begin(), main_chain.end(), element);
+		main_chain.insert(it, element);
+	}
+	if (odd_leftover != -1) {
+		auto it = std::lower_bound(main_chain.begin(), main_chain.end(), odd_leftover);
+		main_chain.insert(it, odd_leftover);
+	}
+	std::cout << "new main chain: ";
+	for (int num : main_chain) std::cout << num << " ";
+	std::cout << std::endl;
+
+	double_vec.first = main_chain;
 }
