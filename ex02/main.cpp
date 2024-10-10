@@ -3,19 +3,31 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <chrono>
+
+
 
 // int main(int argc, char *argv[]) {
 int main() {
-	// using simpleVector = std::vector<int>;
-	// using pairVector = std::vector<std::pair<int, int>>;
-	// using flexVector = std::variant<simpleVector, pairVector>;
-	// std::variant<std::vector<int>, std::vector<std::pair<int, int>>> flex;;
-	std::vector<int> input = {4, 5, 21, 2, 212, 42, 1, 40, 37};
-	// std::variant<std::vector<int>,std::pair<std::vector<int>, std::vector<int>>> flex_vec = input;
-	std::pair<std::vector<int>, std::vector<int>> flex_vec;
-	flex_vec.first = input;
-	fordJohnson(flex_vec);
 
+	std::vector<int> input = {4, 5, 21, 2, 212, 42, 1, 40, 37};
+
+	std::cout << "Before: ";
+	for (int nbr : input) std::cout << nbr << " ";
+	std::cout << std::endl;
+
+	auto start = std::chrono::high_resolution_clock::now();
+	// vec_sort(input);
+	vec_sort1(input);
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+
+	std::cout << "After: ";
+	for (int nbr : input) std::cout << nbr << " ";
+	std::cout << std::endl;
+
+	std::cout << "Time to process a range of " << input.size() << " elements with std::vector : " << duration.count() << " μs" << std::endl;
 	// for ( int nbr : std::get<std::vector<int>>(flex_vec)) std::cout << nbr << " ";
 	// std::cout << std::endl;
 	// PmergeMe algo;

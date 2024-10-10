@@ -54,15 +54,68 @@ void PmergeMe::built_containers(int argc, char *argv[]){
 // 		throw std::invalid_argument("Duplicate found");
 // }
 
+// void fordJohnson(std::vector<int> vec) {
+// 	std::size_t size = vec.size();
+// 	if (size <= 1) return;
+// }
+
+void fordJohnson1(std::vector<std::pair<int, int>>& vec) {
+	std::size_t size = vec.size();
+	if (size <= 1) return;
+	int odd_leftover = -1;
+	if (size % 2 != 0) {
+		odd_leftover = vec[size - 1].first;
+		vec.pop_back();
+		size--;
+	}
+
+	std::vector<std::pair<int, int>> pair_vec;
+	for (std::size_t i = 0; i + 1 < size; i += 2) {
+		if (vec[i].first > vec[i + 1].first) {
+			pair_vec.emplace_back(vec[i].first, vec[i + 1].first);
+		} else {
+			pair_vec.emplace_back(vec[i + 1].first, vec[i].first);
+		}
+	}
+	fordJohnson1(pair_vec);
+	std::vector<int> main_chain;
+	std::vector<int> pending_chain;
+
+	for (const auto& [first, second] : pair_vec) {
+		main_chain.push_back(first);
+		pending_chain.push_back(second);
+	}
+
+	if (odd_leftover != -1)
+		pending_chain.push_back(odd_leftover);
+
+	std::cout << "main chain: ";
+	for (int nbr : main_chain) std::cout << nbr << " ";
+	std::cout << std::endl;
+
+	std::cout << "pending chain: ";
+	for (int nbr : pending_chain) std::cout << nbr << " ";
+	std::cout << std::endl;
+
+	for (const int& element : pending_chain) {
+		auto it = std::lower_bound(main_chain.begin(), main_chain.end(), element);
+		main_chain.insert(it, element);
+	}
+
+	for (std::size_t i = 0; i < main_chain.size(); ++i) {
+		vec[i].first = main_chain[i];
+	}
+}
 
 void fordJohnson(std::pair<std::vector<int>, std::vector<int>>& double_vec) {
-	size_t size = double_vec.first.size();
+	std::size_t size = double_vec.first.size();
 	if (size <= 1)
 		return;
 
 	std::pair<std::vector<int>, std::vector<int>> Pair;
 	for (std::size_t i = 0; i + 1 < double_vec.first.size(); i += 2) {
-		std::cout << double_vec.first[i] << " " << double_vec.first[i + 1] << " ";
+		// debug
+		// std::cout << double_vec.first[i] << " " << double_vec.first[i + 1] << " ";
 		if (double_vec.first[i] > double_vec.first[i + 1]) {
 			Pair.first.push_back(double_vec.first[i]);
 			Pair.second.push_back(double_vec.first[i + 1]);
@@ -71,34 +124,64 @@ void fordJohnson(std::pair<std::vector<int>, std::vector<int>>& double_vec) {
 			Pair.second.push_back(double_vec.first[i]);
 		}
 	}
+	//debug
+	// std::cout << std::endl;
 	int odd_leftover = -1;
 	if (double_vec.first.size() % 2 != 0)
 		odd_leftover = double_vec.first.back();
-	std::cout << std::endl;
 	fordJohnson(Pair);
 
 	std::vector<int> main_chain = Pair.first;
 	std::vector<int> pending_chain = Pair.second;
-
-	std::cout << "main chain: ";
-	for (int num : main_chain) std::cout << num << " ";
-	std::cout << std::endl;
-
+	if (odd_leftover != - 1) {
+		pending_chain.push_back(odd_leftover);
+	}
 	std::cout << "pending chain: ";
-	for (int num : pending_chain) std::cout << num << " ";
+	for (int nbr : pending_chain) std::cout << nbr << " ";
 	std::cout << std::endl;
+
+	// debug
+	// std::cout << "main chain: ";
+	// for (int num : main_chain) std::cout << num << " ";
+	// std::cout << std::endl;
+
+	// debug
+	// std::cout << "pending chain: ";
+	// for (int num : pending_chain) std::cout << num << " ";
+	// std::cout << std::endl;
 
 	for (const int& element : pending_chain) {
 		auto it = std::lower_bound(main_chain.begin(), main_chain.end(), element);
 		main_chain.insert(it, element);
 	}
-	if (odd_leftover != -1) {
-		auto it = std::lower_bound(main_chain.begin(), main_chain.end(), odd_leftover);
-		main_chain.insert(it, odd_leftover);
-	}
-	std::cout << "new main chain: ";
-	for (int num : main_chain) std::cout << num << " ";
-	std::cout << std::endl;
+	// if (odd_leftover != -1) {
+	// 	auto it = std::lower_bound(main_chain.begin(), main_chain.end(), odd_leftover);
+	// 	main_chain.insert(it, odd_leftover);
+	// }
+
+	//debug
+	// std::cout << "new main chain: ";
+	// for (int num : main_chain) std::cout << num << " ";
+	// std::cout << std::endl;
 
 	double_vec.first = main_chain;
+}
+
+void vec_sort(std::vector<int>& input) {
+	std::pair<std::vector<int>, std::vector<int>> double_vec;
+	double_vec.first = input;
+	fordJohnson(double_vec);
+	input = double_vec.first;
+}
+
+void vec_sort1(std::vector<int> &input) {
+	std::vector<std::pair<int, int>> pair_vec;
+
+	for (const auto& value : input ) {
+		pair_vec.emplace_back(value, 0);
+	}
+	fordJohnson1(pair_vec);
+	for (std::size_t i = 0; i < input.size(); ++i) {
+		input[i] = pair_vec[i].first;
+	}
 }

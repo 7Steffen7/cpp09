@@ -28,3 +28,5 @@ private:
 
 // void fordJohnson(std::variant<std::vector<int>,std::pair<std::vector<int>, std::vector<int>>>& flex_vec);
 void fordJohnson(std::pair<std::vector<int>, std::vector<int>>& double_vec);
+void vec_sort(std::vector<int>& input);
+void vec_sort1(std::vector<int>& input);
