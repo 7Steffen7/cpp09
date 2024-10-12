@@ -19,6 +19,7 @@ int main() {
 	auto start = std::chrono::high_resolution_clock::now();
 	// vec_sort(input);
 	vec_sort1(input);
+	vec_sort2(input);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 

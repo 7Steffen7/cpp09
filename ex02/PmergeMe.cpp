@@ -185,3 +185,21 @@ void vec_sort1(std::vector<int> &input) {
 		input[i] = pair_vec[i].first;
 	}
 }
+
+void sort_pairs(std::vector<std::pair<int, int>> vec_pair, std::vector<int> main_chain, std::vector<int> pending_chain) {
+
+}
+
+void vec_sort2(std::vector<int>& input) {
+	std::vector<std::pair<int, int>> vec_pair;
+	std::vector<int> main_chain;
+	std::vector<int> pending_chain;
+	for (std::size_t i = 0; i + 1; i += 2) {
+		if (input[i] > input [i + 1]) {
+			vec_pair.emplace_back(input[i], input[i + 1]);
+		} else {
+			vec_pair.emplace_back(input[i + 1], input[i]);
+		}
+		sort_pairs(vec_pair, main_chain, pending_chain);
+	}
+}
