@@ -1,11 +1,10 @@
 #include "PmergeMe.hpp"
+#include <cstddef>
 #include <exception>
 #include <iostream>
 #include <utility>
 #include <vector>
 #include <chrono>
-
-
 
 // int main(int argc, char *argv[]) {
 int main() {
@@ -18,7 +17,7 @@ int main() {
 
 	auto start = std::chrono::high_resolution_clock::now();
 	// vec_sort(input);
-	vec_sort1(input);
+	// vec_sort1(input);
 	vec_sort2(input);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);

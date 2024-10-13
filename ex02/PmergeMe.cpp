@@ -1,6 +1,7 @@
 #include "PmergeMe.hpp"
 #include <algorithm>
 #include <cstddef>
+#include <cstdio>
 #include <exception>
 #include <iostream>
 #include <iterator>
@@ -57,8 +58,8 @@ void PmergeMe::built_containers(int argc, char *argv[]){
 // void fordJohnson(std::vector<int> vec) {
 // 	std::size_t size = vec.size();
 // 	if (size <= 1) return;
-// }
 
+// }
 void fordJohnson1(std::vector<std::pair<int, int>>& vec) {
 	std::size_t size = vec.size();
 	if (size <= 1) return;
@@ -186,20 +187,117 @@ void vec_sort1(std::vector<int> &input) {
 	}
 }
 
-void sort_pairs(std::vector<std::pair<int, int>> vec_pair, std::vector<int> main_chain, std::vector<int> pending_chain) {
+// void sort_pairs(std::vector<std::pair<int, int>> vec_pair, std::vector<int> main_chain, std::vector<int> pending_chain) {
 
+// }
+
+// void vec_sort2(std::vector<int>& input) {
+// 	std::vector<std::pair<int, int>> vec_pair;
+// 	std::vector<int> main_chain;
+// 	std::vector<int> pending_chain;
+// 	for (std::size_t i = 0; i + 1; i += 2) {
+// 		if (input[i] > input [i + 1]) {
+// 			vec_pair.emplace_back(input[i], input[i + 1]);
+// 		} else {
+// 			vec_pair.emplace_back(input[i + 1], input[i]);
+// 		}
+// 		sort_pairs(vec_pair, main_chain, pending_chain);
+// 	}
+// }
+
+template<typename T>
+void print_containers(std::vector<std::pair<T*, T*>> container) {
+	// std::cout << "test " << std::endl;
+	for (const auto& [first, second] : container) {
+		if (first && second)
+			std::cout << "(" << *first << ", " << *second << ")";
+		else
+			std::cout << "(" << *first << ", " << "nullptr" << ")";
+	}
+	std::cout << std::endl;
 }
 
-void vec_sort2(std::vector<int>& input) {
-	std::vector<std::pair<int, int>> vec_pair;
-	std::vector<int> main_chain;
-	std::vector<int> pending_chain;
-	for (std::size_t i = 0; i + 1; i += 2) {
-		if (input[i] > input [i + 1]) {
-			vec_pair.emplace_back(input[i], input[i + 1]);
+template<typename T>
+void fordJohnson2(std::vector<std::pair<T*, T*>>& p_vec) {
+
+	std::size_t size = p_vec.size();
+	std::cout << "size: " << size << std::endl;
+
+	if (size <= 1) return;
+
+	print_containers(p_vec);
+	// int odd_nbrs = -1;
+	// std::pair<T*,T*>* odd_nbrs = nullptr;
+	// if (size % 2) {
+
+	// 	odd_nbrs = &p_vec.back();
+	// 	p_vec.pop_back();
+	// 	--size;
+	// }
+	std::vector<std::pair<T*, T*>> pair_vec;
+	for (std::size_t i = 0; i + 1 < size; i += 2) {
+		if (*p_vec[i].first > *p_vec[i + 1].first) {
+			pair_vec.emplace_back(p_vec[i].first, p_vec[i + 1].first);
 		} else {
-			vec_pair.emplace_back(input[i + 1], input[i]);
+			pair_vec.emplace_back(p_vec[i + 1].first, p_vec[i].first);
 		}
-		sort_pairs(vec_pair, main_chain, pending_chain);
 	}
+	fordJohnson2(pair_vec);
+	// std::vector<std::pair<T*, T*>> main_chain;
+	// std::vector<std::pair<T*, T*>> pending_chain;
+	std::vector<T*> main_chain;
+	std::vector<T*> pending_chain;
+
+	for (const auto& [first, second] : pair_vec) {
+		main_chain.push_back(first);
+		pending_chain.push_back(second);
+		// main_chain.emplace_back(first, nullptr);
+		// pending_chain.emplace_back(second, nullptr);
+	}
+
+	// if (odd_nbrs) {
+	// 	pending_chain.push_back(odd_nbrs->first);
+	// 	pending_chain.push_back(odd_nbrs->second);
+	// 	odd_nbrs = nullptr;
+	// }
+
+	std::cout << "main chain: ";
+	// print_containers(main_chain);
+	for (T* nbr : main_chain) std::cout << *nbr << " ";
+	std::cout << std::endl;
+
+	std::cout << "pending chain: ";
+	// print_containers(pending_chain);
+	for (T* nbr : pending_chain) std::cout << *nbr << " ";
+	std::cout << std::endl;
+
+	// std::cout << "main_chain size: " << main_chain.size() << std::endl;
+
+	for (T* element : pending_chain) {
+		auto it = std::lower_bound(main_chain.begin(), main_chain.end(),
+				element, [](const T* a, const T* b) {return *a < *b; } );
+		main_chain.insert(it, element);
+	}
+	p_vec.clear();
+
+	std::cout << "main_chain_size: " << main_chain.size() << std::endl;
+// 	for (std::size_t i = 0; i < main_chain.size(); i++) {
+// 		// if (i + 1 < main_chain.size()) {
+// 		// 	p_vec.emplace_back(main_chain[i], main_chain[i + 1]);
+// 		// } else {
+// 		// 	p_vec.emplace_back(main_chain[i], nullptr);
+// 		// 	// p_vec.emplace_back(main_chain[i], main_chain[i]);
+// 		// }
+// 		p_vec.pop_back(main_chain[i]) = main_chain[i];
+// 	}
+}
+
+// template<typename T>
+void vec_sort2(std::vector<int>& input) {
+	std::vector<std::pair<int*, int*>> p_vec;
+	// std::vector<int*> p_vec;
+	for (int& nbr : input) {
+		p_vec.emplace_back(&nbr, nullptr);
+	}
+	fordJohnson2(p_vec);
 }

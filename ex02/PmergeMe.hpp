@@ -30,3 +30,6 @@ private:
 void fordJohnson(std::pair<std::vector<int>, std::vector<int>>& double_vec);
 void vec_sort(std::vector<int>& input);
 void vec_sort1(std::vector<int>& input);
+
+// template<typename T>
+void vec_sort2(std::vector<int>& input);
