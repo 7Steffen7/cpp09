@@ -9,7 +9,7 @@
 // int main(int argc, char *argv[]) {
 int main() {
 
-	std::vector<int> input = {4, 5, 21, 2, 212, 42, 1, 40, 37};
+	std::vector<int> input = {4, 5, 212, 42, 21, 2, 1, 40, 37};
 
 	std::cout << "Before: ";
 	for (int nbr : input) std::cout << nbr << " ";
@@ -18,7 +18,8 @@ int main() {
 	auto start = std::chrono::high_resolution_clock::now();
 	// vec_sort(input);
 	// vec_sort1(input);
-	vec_sort2(input);
+	// vec_sort2(input);
+	vec_sort3(input);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
