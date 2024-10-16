@@ -5,6 +5,7 @@
 #include <exception>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -12,40 +13,40 @@
 #include <variant>
 #include <vector>
 
-PmergeMe::PmergeMe() {
-	std::cout << "Default constructor called" << std::endl;
-}
+// PmergeMe::PmergeMe() {
+// 	std::cout << "Default constructor called" << std::endl;
+// }
 
-PmergeMe::~PmergeMe() {
-	std::cout << "Destructor called" << std::endl;
-}
+// PmergeMe::~PmergeMe() {
+// 	std::cout << "Destructor called" << std::endl;
+// }
 
-void PmergeMe::built_containers(int argc, char *argv[]){
-	if (argc == 1 || argv[1][0] == '\0')
-		throw std::invalid_argument("please enter some positive integers");
-	// check .reserve(argc - 1) for vector later on
-	for (int i = 1; i < argc; ++i) {
-		try {
-			int value = std::stoi(argv[i]);
-			if (value < 0)
-				throw std::invalid_argument(std::to_string(i) + ": Number must be a positve integer");
-			vec_container.push_back(value);
-			// add deque later !
-			// deq_container.push_back(value);
-		} catch (const std::exception& e) {
-			throw;
-		}
-	}
+// void PmergeMe::built_containers(int argc, char *argv[]){
+// 	if (argc == 1 || argv[1][0] == '\0')
+// 		throw std::invalid_argument("please enter some positive integers");
+// 	// check .reserve(argc - 1) for vector later on
+// 	for (int i = 1; i < argc; ++i) {
+// 		try {
+// 			int value = std::stoi(argv[i]);
+// 			if (value < 0)
+// 				throw std::invalid_argument(std::to_string(i) + ": Number must be a positve integer");
+// 			vec_container.push_back(value);
+// 			// add deque later !
+// 			// deq_container.push_back(value);
+// 		} catch (const std::exception& e) {
+// 			throw;
+// 		}
+// 	}
 
-	std::cout << "initial state:\n";
-	for (const auto& element : vec_container) {
-		std::cout  << element << " ";
-	}
-	std::cout << std::endl;
+// 	std::cout << "initial state:\n";
+// 	for (const auto& element : vec_container) {
+// 		std::cout  << element << " ";
+// 	}
+// 	std::cout << std::endl;
 	// for (const auto& element : deq_container) {
 	// 	std::cout << "deque: " << element << std::endl;
 	// }
-}
+// }
 
 // void PmergeMe::look_for_duplicates(const std::vector<int>& vec) {
 // 	std::vector<int> vec_copy = vec;
@@ -358,15 +359,87 @@ void fjay(std::vector<std::pair<int*, int*>*>& input) {
 		}
 	}
 	fjay(new_pair);
-	printPairs(input, "input after recursion");
+
 	printPairs(new_pair, "new_pair after recursion");
 }
 
-void vec_sort3(std::vector<int> &input) {
-	std::vector<std::pair<int*, int*>*> p_vec;
+// void vec_sort3(std::vector<int> &input) {
+// 	std::vector<std::pair<int*, int*>*> p_vec;
 
-	for (size_t i = 0; i < input.size(); ++i) {
-		p_vec.push_back(new std::pair<int*, int*>(&input[i], nullptr));
+// 	for (size_t i = 0; i < input.size(); ++i) {
+// 		p_vec.push_back(new std::pair<int*, int*>(&input[i], nullptr));
+// 	}
+// 	fjay(p_vec);
+// }
+
+std::shared_ptr<PolyBase> PolyPair::getMax() const {
+	return _max;
+}
+
+std::shared_ptr<PolyBase> PolyPair::getMin() const {
+	return _min;
+}
+
+PolyNbr::PolyNbr(int nbr) : _nbr(nbr) {
+	// std::cout << "PolyNbr constructor" << std::endl;
+}
+
+PolyNbr::~PolyNbr() {
+	// std::cout << "PolyNbr destructor" << std::endl;
+}
+
+int PolyNbr::getNbr() const {
+	return _nbr;
+}
+
+// std::move to transfer ownership
+PolyPair::PolyPair(const std::shared_ptr<PolyBase>& first, const std::shared_ptr<PolyBase>& second) {
+	if (first->getNbr() > second->getNbr()) {
+		_max = std::move(first);
+		_min = std::move(second);
+	} else {
+		_max = std::move(second);
+		_min = std::move(first);
 	}
-	fjay(p_vec);
+	// std::cout << "PolyPair constructor" << std::endl;
+}
+
+
+PolyPair::~PolyPair() {
+	// std::cout << "PolyPair Destructor" << std::endl;
+}
+
+int PolyPair::getNbr() const {
+	return _max->getNbr();
+}
+
+
+
+void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec) {
+	std::size_t size = vec.size();
+	std::cout << "size: " << size << std::endl;
+	if (size <= 1) return;
+
+	std::vector<std::shared_ptr<PolyBase>> pair_vec;
+
+	for (std::size_t i = 0; i + 1 < size; i += 2) {
+			std::shared_ptr<PolyBase> new_pair = std::make_shared<PolyPair>((vec[i]) ,vec[i + 1]);
+			// std::cout << "test" << std::endl;
+			pair_vec.push_back(new_pair);
+	}
+	PmergeMe(pair_vec);
+
+	std::vector<std::shared_ptr<PolyBase>> main_chain;
+	std::vector<std::shared_ptr<PolyBase>> pending_chain;
+
+
+}
+
+void vec_prep(std::vector<int>& vec) {
+	std::vector<std::shared_ptr<PolyBase>> Base;
+	Base.reserve(vec.size());
+	for (const auto& value : vec) {
+		Base.push_back(std::make_shared<PolyNbr>(value));
+	}
+	PmergeMe(Base);
 }

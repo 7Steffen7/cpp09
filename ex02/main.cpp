@@ -19,7 +19,8 @@ int main() {
 	// vec_sort(input);
 	// vec_sort1(input);
 	// vec_sort2(input);
-	vec_sort3(input);
+	// vec_sort3(input);
+	vec_prep(input);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
