@@ -9,7 +9,8 @@
 // int main(int argc, char *argv[]) {
 int main() {
 
-	std::vector<int> input = {4, 5, 212, 42, 21, 2, 1, 40, 37};
+	// std::vector<int> input = {4, 5, 212, 42, 21, 2, 1, 40, 37};
+	std::vector<int> input = {4, 5, 212, 42, 61, 2, 1, 40};
 
 	std::cout << "Before: ";
 	for (int nbr : input) std::cout << nbr << " ";
