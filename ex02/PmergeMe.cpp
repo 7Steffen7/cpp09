@@ -424,8 +424,8 @@ isert b2 - is alwats smaller that a2
 */
 
 // Jacobsthal Sequence converted to indeces starting with 0 2 4 10 20 42 84 170
-int jSeq(int i) {
-	i += 2;
+std::size_t jSeq(std::size_t i) {
+	// i += 2;
 	return (((1 << i) - (i % 2 == 0 ? 1 : -1)) / 3) - 1;
 }
 
@@ -435,9 +435,6 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec) {
 	std::size_t size = vec.size();
 	// std::cout << "size: " << size << std::endl;
 	if (size <= 1) return;
-	// if (size % 2 != 0) {
-	// 	--size;
-	// }
 
 	std::vector<std::shared_ptr<PolyBase>> pair_vec;
 
@@ -467,35 +464,37 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec) {
 		// std::cout << "test remain: " << vec[size - 1]->getNbr() << std::endl;
 		pending_chain.push_back(vec[size - 1]);
 	}
-	// bool found_nbr = false;
-	// for (std::size_t i = 0; !found_nbr; ++i) {
-	// 	for (std::size_t j = jSeq(i + 1); j > jSeq(i); --j) {
-
-	// 	}
-	// }
-	// std::cout << "pending chain size: " << pending_chain.size() << std::endl;
 	auto compare_helper = [](const std::shared_ptr<PolyBase>& a, const std::shared_ptr<PolyBase>& b) {
 		return a->getNbr() < b->getNbr();
 	};
-	for (int i = pending_chain.size() - 1; i > 0 ; --i) {
-		auto it = std::lower_bound(main_chain.begin(), main_chain.end(), pending_chain[i], compare_helper);
-		// if (it == main_chain.end()) {
-		// 	continue;
-		// }
-		// std::cout << "pending chain: " << pending_chain[i]->getNbr() << " ";
-		main_chain.insert(it ,pending_chain[i]);
+	// for (std::size_t i = pending_chain.size() - 1; i > 0 ; --i) {
+	// 	auto it = std::lower_bound(main_chain.begin(), main_chain.end(), pending_chain[i], compare_helper);
+	// 	main_chain.insert(it ,pending_chain[i]);
+	// }
+	std::size_t end_condition;
+	// std::cout << "pen size: " << pending_chain.size() << std::endl;
+	for (std::size_t i = 3; i < pending_chain.size() + 3; ++i) {
+		end_condition = jSeq(i);
+		if (end_condition >= pending_chain.size()) {
+			break;
+		}
 	}
-	// std::cout << std::endl;
-	// std::cout << "test pending chain" << std::endl;
-	// for (std::size_t i = 0; i < pending_chain.size(); ++i){
-	// 	std::cout << pending_chain[i]->getNbr() << " ";
+	for (std::size_t j = 0; jSeq(j + 1) <= end_condition; ++j) {
+		for (std::size_t i = jSeq(j + 1); i > jSeq(j); --i) {
+			if (i >= pending_chain.size()) {
+				i = pending_chain.size() - 1;
+			}
+			// std::cout << "pending size: " << pending_chain.size() << " nbr: " << pending_chain[i]->getNbr() << "(" << i << ")" <<  std::endl;
+			auto it = std::lower_bound(main_chain.begin(), main_chain.end(), pending_chain[i], compare_helper);
+			main_chain.insert(it ,pending_chain[i]);
+		}
+	}
+
+	// std::cout << "main chain:  ";
+	// for (std::size_t i = 0; i < main_chain.size(); ++i) {
+	// 	std::cout  << main_chain[i]->getNbr() << " ";
 	// }
 	// std::cout << std::endl;
-	std::cout << "main chain:  ";
-	for (std::size_t i = 0; i < main_chain.size(); ++i) {
-		std::cout  << main_chain[i]->getNbr() << " ";
-	}
-	std::cout << std::endl;
 	//exchange contents of vectors
 	vec.swap(main_chain);
 }
