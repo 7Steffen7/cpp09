@@ -435,9 +435,9 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec) {
 	std::size_t size = vec.size();
 	// std::cout << "size: " << size << std::endl;
 	if (size <= 1) return;
-	if (size % 2 != 0) {
-		--size;
-	}
+	// if (size % 2 != 0) {
+	// 	--size;
+	// }
 
 	std::vector<std::shared_ptr<PolyBase>> pair_vec;
 
@@ -463,17 +463,34 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec) {
 		std::cout << " ↓" << std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMin()->getNbr() << ")";
 	}
 	std::cout << std::endl;
+	if (size % 2 != 0) {
+		// std::cout << "test remain: " << vec[size - 1]->getNbr() << std::endl;
+		pending_chain.push_back(vec[size - 1]);
+	}
 	// bool found_nbr = false;
 	// for (std::size_t i = 0; !found_nbr; ++i) {
 	// 	for (std::size_t j = jSeq(i + 1); j > jSeq(i); --j) {
 
 	// 	}
 	// }
-	for (std::size_t i = pending_chain.size() - 1; i > - 1; --i) {
-		auto it = std::lower_bound(main_chain.begin(), main_chain.end(), pending_chain[i]);
-		// std::cout << "it " << it->get()->getNbr() << std::endl;
+	// std::cout << "pending chain size: " << pending_chain.size() << std::endl;
+	auto compare_helper = [](const std::shared_ptr<PolyBase>& a, const std::shared_ptr<PolyBase>& b) {
+		return a->getNbr() < b->getNbr();
+	};
+	for (int i = pending_chain.size() - 1; i > 0 ; --i) {
+		auto it = std::lower_bound(main_chain.begin(), main_chain.end(), pending_chain[i], compare_helper);
+		// if (it == main_chain.end()) {
+		// 	continue;
+		// }
+		// std::cout << "pending chain: " << pending_chain[i]->getNbr() << " ";
 		main_chain.insert(it ,pending_chain[i]);
 	}
+	// std::cout << std::endl;
+	// std::cout << "test pending chain" << std::endl;
+	// for (std::size_t i = 0; i < pending_chain.size(); ++i){
+	// 	std::cout << pending_chain[i]->getNbr() << " ";
+	// }
+	// std::cout << std::endl;
 	std::cout << "main chain:  ";
 	for (std::size_t i = 0; i < main_chain.size(); ++i) {
 		std::cout  << main_chain[i]->getNbr() << " ";

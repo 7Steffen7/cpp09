@@ -10,7 +10,8 @@
 int main() {
 
 	// std::vector<int> input = {4, 5, 212, 42, 21, 2, 1, 40, 37};
-	std::vector<int> input = {4, 5, 212, 42, 61, 2, 1, 40};
+	// std::vector<int> input = {4, 5, 212, 42, 61, 2, 1, 40};
+	std::vector<int> input = {61, 33, 90, 28, 13, 37, 88, 69, 2, 26, 95, 81, 38, 75, 52, 15, 92, 42, 53, 84, 99, 48, 17, 67, 7, 58, 30, 20, 46, 72, 86};
 
 	std::cout << "Before: ";
 	for (int nbr : input) std::cout << nbr << " ";
