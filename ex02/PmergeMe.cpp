@@ -95,7 +95,6 @@ isert b2 - is alwats smaller then a2
 
 // Jacobsthal Sequence converted to indeces starting with 0 2 4 10 20 42 84 170
 std::size_t jSeq(std::size_t i) {
-	// i += 2;
 	return (((1 << i) - (i % 2 == 0 ? 1 : -1)) / 3) - 1;
 }
 
@@ -167,12 +166,16 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec, std::size_t& compare)
 	// }
 	std::size_t end_condition;
 	// std::cout << "pen size: " << pending_chain.size() << std::endl;
+;
 	for (std::size_t i = 3; i < pending_chain.size() + 3; ++i) {
+		// end_condition = jacobs[i];
 		end_condition = jSeq(i);
+		// std::cout << "end_con: " << end_condition << " ";
 		if (end_condition >= pending_chain.size()) {
 			break;
 		}
 	}
+	// std::cout << std::endl;
 	// std::cout << "end con: " << end_condition << std::endl;
 	for (std::size_t j = 0; jSeq(j + 1) <= end_condition; ++j) {
 		for (std::size_t i = jSeq(j + 1); i > jSeq(j); --i) {
@@ -182,12 +185,11 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec, std::size_t& compare)
 				if (i <= jSeq(j))	break;
 			}
 			// std::cout << "pending size: " << pending_chain.size() << " nbr: " << pending_chain[i]->getNbr() << "(" << i << ")" <<  std::endl;
-			// auto it = std::lower_bound(main_chain.begin(), main_chain.end(), pending_chain[i], compare_helper);
 			std::size_t idx = (1 << j) - 2;
 			// std::cout << "idx: " << idx << " j: " << j << " ";
-			// std::cout << "distance: " << std::distance(main_chain.begin(), main_chain.end()) << std::endl;
-			// auto it = lower_bound_imp(main_chain.begin(), main_chain.end(), pending_chain[i], compare_helper, compare);
+			// auto it = std::lower_bound(main_chain.begin(), main_chain.begin () + idx, pending_chain[i], compare_helper);
 			auto it = lower_bound_imp(main_chain.begin(), main_chain.begin() + idx, pending_chain[i], compare_helper, compare);
+			// auto it = lower_bound_imp(main_chain.begin(), main_chain.end(), pending_chain[i], compare_helper, compare);
 			main_chain.insert(it ,pending_chain[i]);
 		}
 	}
@@ -202,7 +204,6 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec, std::size_t& compare)
 }
 
 void vec_prep(std::vector<int>& vec, std::size_t& comparisons) {
-	// std::size_t comparisons = 0;
 	std::vector<std::shared_ptr<PolyBase>> Base;
 	Base.reserve(vec.size());
 	for (const auto& value : vec) {
@@ -212,5 +213,4 @@ void vec_prep(std::vector<int>& vec, std::size_t& comparisons) {
 	for (std::size_t i = 0; i < Base.size(); ++i) {
 		vec[i] = Base[i]->getNbr();
 	}
-	// std::cout << "comparisons: " << comparisons << std::endl;
 }

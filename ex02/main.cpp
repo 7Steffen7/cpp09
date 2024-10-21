@@ -1,4 +1,5 @@
 #include "PmergeMe.hpp"
+#include <algorithm>
 #include <cstddef>
 #include <exception>
 #include <iostream>
@@ -8,7 +9,6 @@
 #include <chrono>
 
 std::size_t jocobsthalseq(std::size_t i) {
-	// i += 0;
 	return (((1 << i) - (i % 2 == 0 ? 1 : -1)) / 3);
 }
 
@@ -27,6 +27,19 @@ std::size_t calculate(std::size_t len) {
 	return 0;
 }
 
+void check_fun(std::size_t nbr_of_comparison, const std::vector<int>& input) {
+	size_t expected_max_nbr_of_comparison = calculate(input.size());
+	if (std::is_sorted(input.begin(), input.end())) {
+		std::cout << "\033[32m" << "Numbers are sorted / " << "\033[0m";
+	} else {
+		std::cout << "\033[31m" << "Numbers are not sorted / " << "\033[0m";
+	} if (nbr_of_comparison <= expected_max_nbr_of_comparison) {
+		std::cout << "\033[32m" << nbr_of_comparison << "(" << expected_max_nbr_of_comparison << ")" << "comparisons" << "\033[0m" <<  std::endl;
+	} else {
+		std::cout << "\033[31m" << nbr_of_comparison << "(" << expected_max_nbr_of_comparison << ")" << "comparisons" << "\033[0m" <<  std::endl;
+	}
+}
+
 // int main(int argc, char *argv[]) {
 int main() {
 
@@ -40,10 +53,6 @@ int main() {
 	std::cout << std::endl;
 
 	auto start = std::chrono::high_resolution_clock::now();
-	// vec_sort(input);
-	// vec_sort1(input);
-	// vec_sort2(input);
-	// vec_sort3(input);
 	vec_prep(input, nbr_of_comparisons);
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
@@ -54,7 +63,8 @@ int main() {
 	std::cout << std::endl;
 
 	std::cout << "Time to process a range of " << input.size() << " elements with std::vector : " << duration.count() << " μs" << std::endl;
-	std::cout << "number of comparisons: " << nbr_of_comparisons << "(" << calculate(input.size()) << ")" <<  std::endl;
+	check_fun(nbr_of_comparisons, input);
+	// std::cout << "number of comparisons: " << nbr_of_comparisons << "(" << calculate(input.size()) << ")" <<  std::endl;
 	// for ( int nbr : std::get<std::vector<int>>(flex_vec)) std::cout << nbr << " ";
 	// std::cout << std::endl;
 	// PmergeMe algo;
