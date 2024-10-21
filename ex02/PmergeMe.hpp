@@ -66,4 +66,4 @@ void vec_sort1(std::vector<int>& input);
 // template<typename T>
 void vec_sort2(std::vector<int>& input);
 void vec_sort3(std::vector<int>& input);
-void vec_prep(std::vector<int>& input);
+void vec_prep(std::vector<int>& input, std::size_t& comparisons);
