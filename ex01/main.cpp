@@ -23,7 +23,7 @@ parsing:
 
 int main(int argc, char* argv[]) {
 	if (argc != 2) {
-		std::cout << "User input missing" << std::endl;
+		std::cout << "Invalid user input missing" << std::endl;
 		return 0;
 	}
 	// std::string input(argv[1]);
