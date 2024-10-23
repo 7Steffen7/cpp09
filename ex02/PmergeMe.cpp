@@ -3,6 +3,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdio>
+#include <deque>
 #include <exception>
 #include <iostream>
 #include <iterator>
@@ -15,34 +16,6 @@
 #include <vector>
 
 
-template<typename T>
-void print_containers(std::vector<std::pair<T*, T*>> container) {
-	// std::cout << "test " << std::endl;
-	for (const auto& [first, second] : container) {
-		if (first && second)
-			std::cout << "(" << *first << ", " << *second << ")";
-		else
-			std::cout << "(" << *first << ", " << "nullptr" << ")";
-	}
-	std::cout << std::endl;
-}
-
-
-
-void printPairs(const std::vector<std::pair<int*, int*>*>& pairs, const std::string& message) {
-	std::cout << message << std::endl;
-	for (std::size_t i = 0; i < pairs.size(); ++i) {
-		std::cout << "Pair " << i << " at " << pairs[i] << ": ("
-			<< *pairs[i]->first << " at " << static_cast<void*>(pairs[i]->first) << ", ";
-		if (pairs[i]->second)
-			std::cout << *pairs[i]->second  << " at " << static_cast<void*>(pairs[i]->second);
-		else
-			std::cout << "nullptr";
-		std::cout << ")\n";
-	}
-	std::cout	<< std::endl;
-}
-
 std::shared_ptr<PolyBase> PolyPair::getMax() const {
 	return _max;
 }
@@ -53,6 +26,20 @@ std::shared_ptr<PolyBase> PolyPair::getMin() const {
 
 PolyNbr::PolyNbr(int nbr) : _nbr(nbr) {
 	// std::cout << "PolyNbr constructor" << std::endl;
+}
+
+PolyNbr::PolyNbr() : _nbr(0) {
+	// std::cout << "PolyNbr default constructor called" << std::endl;
+}
+
+PolyNbr::PolyNbr(const PolyNbr& other) : _nbr(other._nbr) {
+	// std::cout << "Copy Constructor called" << std::endl;
+}
+
+PolyNbr& PolyNbr::operator=(const PolyNbr& other) {
+	if (this != &other)
+		return *this;
+	return *this;
 }
 
 PolyNbr::~PolyNbr() {
@@ -75,6 +62,22 @@ PolyPair::PolyPair(const std::shared_ptr<PolyBase>& first, const std::shared_ptr
 	// std::cout << "PolyPair constructor" << std::endl;
 }
 
+PolyPair::PolyPair() : _min(nullptr), _max(nullptr) {
+	std::cout << "PolyPair default constructor" << std::endl;
+}
+
+PolyPair::PolyPair(const PolyPair& other) : _min(other._min), _max(other._max) {
+	// std::cout << "PolyPair copy constructor called" << std::endl;
+}
+
+PolyPair& PolyPair::operator=(const PolyPair& other) {
+	if (this != &other) {
+		_min = getMin();
+		_max = getMax();
+	}
+	// std::cout << "PolyPair Copy assignment operator" << std::endl;
+	return *this;
+}
 
 PolyPair::~PolyPair() {
 	// std::cout << "PolyPair Destructor" << std::endl;
@@ -84,16 +87,8 @@ int PolyPair::getNbr() const {
 	return _max->getNbr();
 }
 
-/*
-a = max of pair;
-b = min of pair;
-a1, a2 ascending order
-b1, b2
-b1, a1, a2 = insert b1 -
-isert b2 - is alwats smaller then a2
-*/
 
-// Jacobsthal Sequence converted to indeces starting with 0 2 4 10 20 42 84 170
+// Jacobsthal Sequence converted to indexes starting with 0 2 4 10 20 42 84 170
 std::size_t jSeq(std::size_t i) {
 	return (((1 << i) - (i % 2 == 0 ? 1 : -1)) / 3) - 1;
 }
@@ -111,7 +106,6 @@ ForwardIterator lower_bound_imp(ForwardIterator first, ForwardIterator last, con
 		it = first;
 		step = count / 2;
 		std::advance(it, step);
-		// if(*it < val) {
 		counter++;
 		if (comp(*it, val)) {
 			first = ++it;
@@ -124,21 +118,29 @@ ForwardIterator lower_bound_imp(ForwardIterator first, ForwardIterator last, con
 }
 
 void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec, std::size_t& compare) {
+
 	std::size_t size = vec.size();
-	// std::cout << "size: " << size << std::endl;
-	if (size <= 1) return;
+	// #if DEBUG
+	// 	std::cout << "size: " << size << std::endl;
+	// #endif
+	if (size == 1) return;
 
 	std::vector<std::shared_ptr<PolyBase>> pair_vec;
-
-	// std::cout << "init(↑↓):";
+	#if DEBUG
+		std::cout << "init(↑↓):";
+	#endif
 	for (std::size_t i = 0; i + 1 < size; i += 2) {
 			std::shared_ptr<PolyBase> new_pair = std::make_shared<PolyPair>((vec[i]) ,vec[i + 1]);
-			// std::cout << "(↑" << std::dynamic_pointer_cast<PolyPair>(new_pair)->getMax()->getNbr()
-			// 		<< " ↓" << std::dynamic_pointer_cast<PolyPair>(new_pair)->getMin()->getNbr() << ")";
+			#if DEBUG
+				std::cout << "(↑" << std::dynamic_pointer_cast<PolyPair>(new_pair)->getMax()->getNbr()
+					<< " ↓" << std::dynamic_pointer_cast<PolyPair>(new_pair)->getMin()->getNbr() << ")";
+			#endif
 			pair_vec.push_back(new_pair);
 			compare++;
 	}
-	// std::cout << std::endl;
+	#if DEBUG
+		std::cout << std::endl;
+	#endif
 	PmergeMe(pair_vec, compare);
 
 	std::vector<std::shared_ptr<PolyBase>> main_chain;
@@ -149,34 +151,29 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec, std::size_t& compare)
 	for (std::size_t i = 0; i < pair_vec.size(); ++i) {
 		main_chain.push_back(std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMax());
 		pending_chain.push_back(std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMin());
-		// std::cout << "(↑" << std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMax()->getNbr();
-		// std::cout << " ↓" << std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMin()->getNbr() << ")";
+		#if DEBUG
+			std::cout << "(↑" << std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMax()->getNbr();
+			std::cout << " ↓" << std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMin()->getNbr() << ")";
+		#endif
 	}
-	// std::cout << std::endl;
+	#if DEBUG
+		std::cout << std::endl;
+	#endif
 	if (size % 2 != 0) {
 		// std::cout << "test remain: " << vec[size - 1]->getNbr() << std::endl;
 		pending_chain.push_back(vec[size - 1]);
 	}
-	// auto compare_helper = [](const std::shared_ptr<PolyBase>& a, const std::shared_ptr<PolyBase>& b) {
-	// 	return a->getNbr() < b->getNbr();
-	// };
-	// for (std::size_t i = pending_chain.size() - 1; i > 0 ; --i) {
-	// 	auto it = std::lower_bound(main_chain.begin(), main_chain.end(), pending_chain[i], compare_helper);
-	// 	main_chain.insert(it ,pending_chain[i]);
-	// }
 	std::size_t end_condition;
-	// std::cout << "pen size: " << pending_chain.size() << std::endl;
-;
 	for (std::size_t i = 3; i < pending_chain.size() + 3; ++i) {
-		// end_condition = jacobs[i];
 		end_condition = jSeq(i);
-		// std::cout << "end_con: " << end_condition << " ";
 		if (end_condition >= pending_chain.size()) {
 			break;
 		}
 	}
-	// std::cout << std::endl;
-	// std::cout << "end con: " << end_condition << std::endl;
+	#if DEBUG
+		std::cout << "pending[" << pending_chain.size() << "] insert(idx): "
+			<< std::dynamic_pointer_cast<PolyPair>(pair_vec[0])->getMin()->getNbr() << "(0)";
+	#endif
 	for (std::size_t j = 0; jSeq(j + 1) <= end_condition; ++j) {
 		for (std::size_t i = jSeq(j + 1); i > jSeq(j); --i) {
 			// if (pending_chain.size() == 1) break;
@@ -184,8 +181,13 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec, std::size_t& compare)
 				i = pending_chain.size() - 1;
 				if (i <= jSeq(j))	break;
 			}
-			// std::cout << "pending size: " << pending_chain.size() << " nbr: " << pending_chain[i]->getNbr() << "(" << i << ")" <<  std::endl;
-			std::size_t idx = (1 << j) - 2;
+			#if DEBUG
+				std::cout << " " << pending_chain[i]->getNbr() << "(" << i << ")";
+			#endif
+			std::size_t idx = (1 << j) - 1;
+			// std::cout << "idx " << idx << std::endl;
+			if (idx > main_chain.size())
+				idx = std::distance(main_chain.begin(), main_chain.end());
 			// std::cout << "idx: " << idx << " j: " << j << " ";
 			// auto it = std::lower_bound(main_chain.begin(), main_chain.begin () + idx, pending_chain[i], compare_helper);
 			auto it = lower_bound_imp(main_chain.begin(), main_chain.begin() + idx, pending_chain[i], compare_helper, compare);
@@ -193,7 +195,9 @@ void PmergeMe(std::vector<std::shared_ptr<PolyBase>>& vec, std::size_t& compare)
 			main_chain.insert(it ,pending_chain[i]);
 		}
 	}
-
+	#if DEBUG
+		std::cout << "\n" << std::endl;
+	#endif
 	// std::cout << "main chain:  ";
 	// for (std::size_t i = 0; i < main_chain.size(); ++i) {
 	// 	std::cout  << main_chain[i]->getNbr() << " ";
@@ -210,6 +214,66 @@ void vec_prep(std::vector<int>& vec, std::size_t& comparisons) {
 		Base.push_back(std::make_shared<PolyNbr>(value));
 	}
 	PmergeMe(Base, comparisons);
+	for (std::size_t i = 0; i < Base.size(); ++i) {
+		vec[i] = Base[i]->getNbr();
+	}
+}
+
+void PmergeMeDeq(std::deque<std::shared_ptr<PolyBase>>& vec, std::size_t& compare) {
+	std::size_t size = vec.size();
+	if (size == 1) return;
+
+	std::deque<std::shared_ptr<PolyBase>> pair_vec;
+
+	for (std::size_t i = 0; i + 1 < size; i += 2) {
+			std::shared_ptr<PolyBase> new_pair = std::make_shared<PolyPair>((vec[i]) ,vec[i + 1]);
+			pair_vec.push_back(new_pair);
+			compare++;
+	}
+	PmergeMeDeq(pair_vec, compare);
+
+	std::deque<std::shared_ptr<PolyBase>> main_chain;
+	std::deque<std::shared_ptr<PolyBase>> pending_chain;
+	main_chain.push_back(std::dynamic_pointer_cast<PolyPair>(pair_vec[0])->getMin());
+	for (std::size_t i = 0; i < pair_vec.size(); ++i) {
+		main_chain.push_back(std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMax());
+		pending_chain.push_back(std::dynamic_pointer_cast<PolyPair>(pair_vec[i])->getMin());
+	}
+	if (size % 2 != 0) {
+		pending_chain.push_back(vec[size - 1]);
+	}
+	std::size_t end_condition;
+;
+	for (std::size_t i = 3; i < pending_chain.size() + 3; ++i) {
+		end_condition = jSeq(i);
+		if (end_condition >= pending_chain.size()) {
+			break;
+		}
+	}
+	for (std::size_t j = 0; jSeq(j + 1) <= end_condition; ++j) {
+		for (std::size_t i = jSeq(j + 1); i > jSeq(j); --i) {
+			if (i >= pending_chain.size()) {
+				i = pending_chain.size() - 1;
+				if (i <= jSeq(j))	break;
+			}
+			std::size_t idx = (1 << j) - 1;
+			if (idx > main_chain.size())
+				idx = std::distance(main_chain.begin(), main_chain.end());
+			auto it = lower_bound_imp(main_chain.begin(), main_chain.begin() + idx, pending_chain[i], compare_helper, compare);
+			main_chain.insert(it ,pending_chain[i]);
+		}
+	}
+	vec.swap(main_chain);
+}
+
+
+
+void deq_prep(std::deque<int>& vec, std::size_t& comparisons) {
+	std::deque<std::shared_ptr<PolyBase>> Base;
+	for (const auto& value : vec) {
+		Base.push_back(std::make_shared<PolyNbr>(value));
+	}
+	PmergeMeDeq(Base, comparisons);
 	for (std::size_t i = 0; i < Base.size(); ++i) {
 		vec[i] = Base[i]->getNbr();
 	}
