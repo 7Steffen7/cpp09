@@ -5,12 +5,24 @@
 
 RPN::RPN(const char* input) : _input(std::string(input)) {
 	// std::cout << "Default constructor called" << std::endl;
-};
+}
+
+RPN::RPN() : _input(nullptr) {
+	// std::cout << "Default Constructor" << std::endl;
+}
+
+RPN::RPN(const RPN& other) : _input(other._input) {
+	// std::cout << "Copy constructor" << std::endl;
+}
 
 RPN::~RPN() {
 	// std::cout << "Destructor called" << std::endl;
-};
+}
 
+RPN& RPN::operator=(const RPN& other) {
+	if (this != & other) return *this;
+	return *this;
+}
 // void RPN::calculate() {
 
 // };
