@@ -1,12 +1,16 @@
-// #pragma once
+#pragma once
 
-// #include <stack>
+#include <sstream>
+#include <stack>
 
-// class RPN {
-// 	public:
-// 		RPN();
-// 		~RPN();
-// 	private:
-// 		std::stack<int> _buffer;
-// 		unsigned int _word_count;
-// };
+class RPN {
+	public:
+		RPN(const char* input);
+		~RPN();
+		void parsing();
+		void print() const;
+	private:
+		std::stack<int> _buffer;
+		const std::string _input;
+		int calculate(int first, int second, const std::string& operators);
+};

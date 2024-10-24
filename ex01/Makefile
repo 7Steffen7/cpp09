@@ -3,13 +3,13 @@ NAME = RPN
 
 CXX = c++
 
-# -Wpedantic warning if code is not strictly c++98
 # -MMD create dependency files
 # -MP add phony target for each dependency // prevent error if renaming or deleting header files
 # -02 optimization flag
 CXXFLAGS = -std=c++17 -Wall -Wextra -Werror -MMD -MP -O2 -g
 
 SRC = main.cpp \
+	RPN.cpp
 
 
 SRC_DIR:=.
