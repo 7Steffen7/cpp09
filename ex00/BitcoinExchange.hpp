@@ -16,6 +16,6 @@ class BitcoinExchange {
 		std::map<std::string, double> _database;
 		std::string _input_data;
 
-		bool date_check(const std::string& date);
+		bool date_check(const std::string& date, std::size_t ref_size);
 		BitcoinExchange();
 };

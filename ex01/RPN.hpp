@@ -13,7 +13,7 @@ class RPN {
 	private:
 		RPN();
 		RPN& operator=(const RPN& other);
-		std::stack<int> _buffer;
+		std::stack<long> _buffer;
 		const std::string _input;
-		int calculate(int first, int second, const std::string& operators);
+		long calculate(long first, long second, const std::string& operators);
 };

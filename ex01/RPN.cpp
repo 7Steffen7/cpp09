@@ -1,5 +1,6 @@
 #include "RPN.hpp"
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 
@@ -31,7 +32,7 @@ bool isOperator(const std::string& token) {
 	return token == "+" || token == "-" || token == "*" || token == "/";
 }
 
-int RPN::calculate(int first, int second, const std::string& operators) {
+long RPN::calculate(long first, long second, const std::string& operators) {
 	switch(operators[0]) {
 		case '+':
 			return first + second;
@@ -55,21 +56,21 @@ void RPN::parsing() {
 			if (_buffer.size() < 2) {
 				throw std::runtime_error("Error");
 			}
-			int sec = _buffer.top();
+			long sec = _buffer.top();
 			_buffer.pop();
-			int fir = _buffer.top();
+			long fir = _buffer.top();
 			_buffer.pop();
 			_buffer.push(calculate(fir, sec, token));
 		} else {
 			try {
-				int num = stoi(token);
+				long num = stol(token);
 				if (num >= 0 && num <= 9) {
 					_buffer.push(num);
 				} else {
 					throw std::runtime_error("Error");
 				}
 			} catch (const std::invalid_argument&) {
-				throw std::runtime_error("Errror");
+				throw std::runtime_error("Error");
 			}
 		}
 	}

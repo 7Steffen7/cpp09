@@ -9,7 +9,7 @@
 int main(int argc, char* argv[]) {
 	try {
 		if (argc != 2) {
-			throw std::runtime_error("Error");
+			throw std::runtime_error("Error: Please enter your calculation");
 		}
 		RPN obj(argv[1]);
 		obj.parsing();

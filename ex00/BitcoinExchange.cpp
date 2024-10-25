@@ -28,8 +28,10 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange &other) {
 	return *this;
 }
 
-bool BitcoinExchange::date_check(const std::string& date) {
+bool BitcoinExchange::date_check(const std::string& date, std::size_t ref_size) {
 
+	if (date.size() != ref_size)
+		return false;
 	// get current date
 	auto now = std::chrono::system_clock::now();
 	auto in_time_t = std::chrono::system_clock::to_time_t(now);
@@ -38,6 +40,7 @@ bool BitcoinExchange::date_check(const std::string& date) {
 	int current_year = timeinfo->tm_year + 1900;
 	int current_month = timeinfo->tm_mon + 1;
 	int current_day = timeinfo->tm_mday;
+
 
 	std::stringstream ss(date);
 
@@ -80,7 +83,7 @@ void BitcoinExchange::readDatabase() {
 		double value;
 
 		if (std::getline(ss, date, ',') && ss >> value) {
-			if (!date_check(date))
+			if (!date_check(date, 10))
 				throw std::invalid_argument("invalid database");
 			_database[date] = value;
 		}
@@ -107,7 +110,7 @@ void BitcoinExchange::searchDatabase() {
 		double value;
 
 		if (std::getline(ss, date, '|') && ss >> value) {
-			if (!date_check(date) || date.back() != ' ') {
+			if (!date_check(date, 11) || date.back() != ' ') {
 				std::cout << "Error: bad input: " << line << std::endl;
 				continue;
 			}
